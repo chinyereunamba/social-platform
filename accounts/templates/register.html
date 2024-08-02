@@ -4,15 +4,94 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register</title>
+    <style>
+      body {
+        height: 100dvh;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        max-width: 1100px;
+        width: 100%;
+        padding: 30px;
+        margin: auto;
+      }
+
+      .container form,
+      .container .intro-headers {
+        max-width: 400px;
+        width: 100%;
+        margin: auto;
+      }
+
+      .intro-headers {
+        text-align: center;
+        padding-bottom: 1rem;
+      }
+      form .form-input,
+      form .form-btn {
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-input input,
+      .form-btn button {
+        width: 100%;
+        padding: 1.2rem;
+        border-radius: 8px;
+        background: #f5f5f5;
+        border: none;
+        font-size: 17px;
+        cursor: pointer;
+        transition: all .3s;
+      }
+      .form-btn button{
+        background: rgb(95, 30, 95);
+        color: white;
+      }
+      .form-btn button:hover{
+       background: rgb(82, 26, 82)
+      }
+      .container label {
+        font-size: 17px;
+      }
+    </style>
   </head>
   <body>
-    <h1>Sign up</h1>
-    <p>Get started with us today</p>
+    <div class="container">
+      <div class="intro-headers">
+        <h1>Sign up</h1>
+        <p>Get started with us today</p>
+      </div>
 
-    <form method="POST">
-      {% csrf_token %}
-       {{form.as_p}}
-      <button type="submit">Sign up</button>
-    </form>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-input">
+          <label for="email">Email</label>
+          {{form.email}}
+        </div>
+        <div class="form-input">
+          <label for="email">Username</label>
+          {{form.username}}
+        </div>
+        <div class="form-input">
+          <label for="email">Password</label>
+          {{form.password1}}
+        </div>
+        <div class="form-input">
+          <label for="email">Retype Password</label>
+          {{form.password2}}
+        </div>
+        <div class="form-btn">
+          <button type="submit">Sign up</button>
+        </div>
+      </form>
+    </div>
   </body>
 </html>

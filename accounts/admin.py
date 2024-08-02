@@ -11,7 +11,7 @@ class AccountAdmin(UserAdmin):
             'fields': ('email', 'password')
         }),
         ('Personal Information', {
-            "fields": ('first_name', 'last_name')
+            "fields": ('display_name',)
         }),
         ("Permissions", {
             'fields': ('is_active', 'is_staff', 'is_superuser')

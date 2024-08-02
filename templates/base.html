@@ -1,13 +1,156 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Profile</title>
     <script src="https://unpkg.com/htmx.org@2.0.1"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        text-decoration: none;
+        box-sizing: border-box;
+      }
+
+      a {
+        color: black;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: auto;
+        padding: 0 30px;
+      }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+      }
+      nav header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      header ul {
+        display: flex;
+        list-style: none;
+        text-decoration: none;
+        gap: 0.7rem;
+        font-size: 18px;
+      }
+      .auth-btn-group {
+        display: flex;
+        gap: 1rem;
+      }
+      button {
+        font-size: 17px;
+        padding: 0.7em 1.2rem;
+        border: 1px solid blue;
+        background: transparent;
+        cursor: pointer;
+      }
+      .post {
+        background: #f5f5f5;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+    </style>
+    <style>
+      .form-container {
+        width: 100%;
+        margin-block: 2rem;
+      }
+      .form-container > div {
+        width: 100%;
+      }
+
+      .form-container div textarea {
+        width: 100%;
+        font-size: 17px;
+        padding: 0.5rem 1rem;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .profile {
+        display: flex;
+        align-content: center;
+        justify-content: flex-start;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .profile img {
+        width: 70px;
+        height: 70px;
+        border-radius: 100%;
+      }
+
+      .profile .name {
+        display: flex;
+        flex-direction: column;
+        justify-self: center;
+        justify-content: center;
+      }
+
+      .profile .display-name {
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      .profile .username {
+        font-size: 14px;
+        color: grey;
+      }
+      .post-content {
+        margin-left: 5.5rem;
+        min-height: 50px;
+        margin-bottom: 1rem;
+      }
+
+      .flex-gap {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.8rem 0;
+        font-size: 17px;
+      }
+
+      .bold {
+        font-weight: 600;
+      }
+      p{
+        font-size: 17px;
+        line-height: 1.5;
+      }
+    </style>
   </head>
 
   <body>
-    {% block content %} {% endblock content %}
+    <div class="container">
+      <nav>
+        <header>
+          <h1 class="logo">Socials</h1>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#">Profile</a></li>
+          </ul>
+        </header>
+        {% if request.user.is_authenticated %}
+        <div class="auth-btn-group">
+          <button><a href="{% url 'logout' %}">Logout</a></button>
+        </div>
+        {% else %}
+        <div class="auth-btn-group">
+          <button>Login</button>
+          <button>Sign up</button>
+        </div>
+        {% endif %}
+      </nav>
+      {% block content %} {% endblock content %}
+    </div>
   </body>
 </html>

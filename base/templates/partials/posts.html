@@ -1,0 +1,27 @@
+<!-- partials/posts.html -->
+{% load static %} {% for post in posts %}
+
+<div class="post">
+  <div class="profile">
+    <img src="{% static 'img/profile-img.png' %}" alt="profile" />
+    <a href="{% url 'profile' post.author.username %}" class="name">
+      <p class="display-name">{{post.author.display_name}}</p>
+      <p class="username">@{{post.author.username}}</p>
+    </a>
+  </div>
+  <div class="post-content">
+    <p><a href="{% url 'post' post.id %}"> {{ post.post }} </a></p>
+    <div
+      style="
+        margin-block: 1rem;
+        font-weight: 600;
+        display: flex;
+        gap: 1rem;
+      "
+    >
+      <p>Posted at: {{post.created_at}}</p>
+      <p>Comments: </p>
+    </div>
+  </div>
+</div>
+{% endfor %}

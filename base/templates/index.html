@@ -1,3 +1,4 @@
+{% extends "base.html" %} {% load static %} {% block content %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,6 +7,39 @@
     <title>Social</title>
   </head>
   <body>
-    <h1>Hello there, Welcome to the home page</h1>
+    <div class="form-container">
+      {% if request.user.is_authenticated %}
+      <div class="profile">
+        <img src="{% static 'img/profile-img.png' %}" alt="profile" />
+        <a href="{% url 'profile' request.user %}" class="name">
+          <p class="display-name">{{request.user.display_name}}</p>
+          <p class="username">@{{request.user}}</p>
+        </a>
+      </div>
+      <form
+        id="post-form"
+        hx-post="{% url 'add_post' %}"
+        hx-target="#post-list"
+        hx-swap="outerHTML"
+      >
+        {% csrf_token %}
+        <div>{{ form.post}}</div>
+        <button type="submit">Add Post</button>
+      </form>
+      {% else %}
+      <div>
+        <h1 style="line-height: 1.5;">Get started</h1>
+        <p>
+          Login or Sign up today to make posts and comment on other users posts
+        </p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div id="post-list">
+      {% include "partials/posts.html" with posts=posts %}
+    </div>
   </body>
 </html>
+
+{% endblock %}

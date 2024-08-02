@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    <textarea name="post" id="post"></textarea>
+    <button type="submit">Send</button>
+</form>
+
+{% endblock %}

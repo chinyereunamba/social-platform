@@ -46,7 +46,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     display_name = models.CharField(
         _("Display Name"), max_length=80, blank=True)
 
-    date_joined = models.DateField(auto_created=True, blank=True)
+    date_joined = models.DateField(auto_now_add=True, blank=True)
     last_login = models.DateTimeField(auto_now=True, blank=True)
 
     is_active = models.BooleanField(default=True)
@@ -59,7 +59,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
 
     def __str__(self):
-        return self.email
+        return self.username
 
     def has_perm(self, perm, obj=None):
         return True

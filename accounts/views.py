@@ -21,7 +21,6 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            print("Success")
             return redirect('/')
         else:
             messages.error(request, 'User not found', fail_silently=False)
