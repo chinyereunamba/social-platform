@@ -3,6 +3,7 @@ Django==5.0.7
 django-crispy-forms==2.3
 django-filter==24.2
 django-htmx==1.18.0
+pillow==10.4.0
 python-decouple==3.8
 sqlparse==0.5.1
 typing_extensions==4.12.2
