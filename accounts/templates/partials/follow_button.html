@@ -1,0 +1,11 @@
+<!-- partials/follow_button.html -->
+{% if is_following %}
+<button hx-get="{% url 'unfollow_user' profile_user.username %}" hx-swap="outerHTML">Unfollow</button>
+{% else %}
+<button hx-get="{% url 'follow_user' profile_user.username %}" hx-swap="outerHTML">Follow</button>
+{% endif %}
+
+
+<script>
+    document.getElementById('follower-count').innerText = {{ followers_count }};
+</script>
