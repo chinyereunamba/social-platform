@@ -1,6 +1,21 @@
 <!-- partials/posts.html -->
 {% load static %} {% for post in posts %}
-
+<style>
+  .post-footer {
+    display: flex;
+    align-items: center;
+    margin-block: 1.5rem 1rem;
+    font-weight: 600;
+    gap: 1rem;
+    width: 50%;
+    justify-content: space-between;
+  }
+  .post-footer-icons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+</style>
 <div class="post">
   <div class="profile">
     <img src="{% static 'img/profile-img.png' %}" alt="profile" />
@@ -11,16 +26,20 @@
   </div>
   <div class="post-content">
     <p><a href="{% url 'post' post.id %}"> {{ post.post }} </a></p>
-    <div
-      style="
-        margin-block: 1rem;
-        font-weight: 600;
-        display: flex;
-        gap: 1rem;
-      "
-    >
-      <p>Posted at: {{post.created_at}}</p>
-      <p>Comments: </p>
+    <div class="post-footer">
+      <div class="post-footer-icons">
+        
+          <i class="fa-regular fa-calendar"></i>
+      </div>
+      <div class="post-footer-icons">
+        <p>
+
+          <i class="fa-regular fa-heart"></i>
+        </p>
+      </div>
+      <div class="post-footer-icons">
+        <i class="fa-regular fa-comment"></i>
+      </div>
     </div>
   </div>
 </div>

@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 
 from .models import Follow, Account
+from base.models import Post
 
 from .forms import UserForm
 
@@ -86,6 +87,7 @@ def unfollow_user(request, username):
 @login_required
 def profile(request, username):
     user = get_object_or_404(Account, username=username)
+    posts = Post.objects.filter(author=request.user)
     is_following = Follow.objects.filter(
         follower=request.user, followed=user).exists()
     followers = Follow.objects.filter(followed=user)
@@ -95,5 +97,6 @@ def profile(request, username):
         'is_following': is_following,
         'followers': followers,
         'following': following,
+        'posts':posts
     })
 

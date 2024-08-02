@@ -1,41 +1,71 @@
 {% extends "base.html" %} {% load static %} {% block content %}
+<style>
+  .post-container {
+    margin-block: 1rem;
+  }
+</style>
+
 <title>{{profile_user.display_name}}'s Profile</title>
 <div class="content-container">
-  <div class="profile">
-    <img src="{% static 'img/profile-img.png' %}" alt="profile" />
-    <div class="name">
-      <p class="display-name">{{profile_user.display_name}}</p>
-      <p class="username">@{{profile_user.username}}</p>
+  <div
+    style="display: flex; justify-content: space-between; align-items: center"
+  >
+    <div class="profile">
+      <img src="{% static 'img/profile-img.png' %}" alt="profile" />
+      <div class="name">
+        <p class="display-name">{{profile_user.display_name}}</p>
+        <p class="username">@{{profile_user.username}}</p>
+      </div>
     </div>
+    {% if request.user == profile_user %}
+    <div>
+      <button><i class="fa fa-gear"></i>Edit profile</button>
+    </div>
+    {% endif %}
   </div>
   <div>
+    <div class="flex-gap">
+      <p>
+        Followers:
+        <span id="follower-count" class="bold">{{ followers.count }}</span>
+      </p>
+      <p>
+        Following:
+        <span id="following-count" class="bold">{{ following.count }}</span>
+      </p>
+    </div>
     {% if profile_user != user %}
     <div id="follow-container" hx-target="this">
       {% include "partials/follow_button.html" %}
     </div>
     {% endif %}
-    <div class="flex-gap">
-      <p>Followers: <span id="follower-count" class="bold">{{ followers.count }}</span></p>
-      <p>Following: <span id="following-count" class="bold">{{ following.count }}</span></p>
-    </div>
-    <ul id="following">
-      {% for followed in following %}
-      <li>
-        <a href="{% url 'profile' followed.followed.username %}"
-          >{{ followed.followed.username }}</a
-        >
-      </li>
-      {% endfor %}
-    </ul>
-    <ul id="followers">
-      {% for follower in followers %}
-      <li>
-        <a href="{% url 'profile' follower.follower.username %}"
-          >{{ follower.follower.username }}</a
-        >
-      </li>
-      {% endfor %}
-    </ul>
   </div>
+</div>
+<div class="post-container">
+  {% if not posts %}
+  <div style="min-height: 400px; display: grid; place-items: center">
+    <h1>No Posts found</h1>
+  </div>
+  {% else %} {% for post in posts %}
+  <h1 style="margin-bottom: 1rem;">Posts</h1>
+  <div class="post">
+    <div class="profile">
+      <img src="{% static 'img/profile-img.png' %}" alt="profile" />
+      <a href="{% url 'profile' post.author.username %}" class="name">
+        <p class="display-name">{{post.author.display_name}}</p>
+        <p class="username">@{{post.author.username}}</p>
+      </a>
+    </div>
+    <div class="post-content">
+      <p><a href="{% url 'post' post.id %}"> {{ post.post }} </a></p>
+      <div
+        style="margin-block: 1rem; font-weight: 600; display: flex; gap: 1rem"
+      >
+        <p>Posted at: {{post.created_at}}</p>
+        <p>Comments:</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %} {% endif %}
 </div>
 {% endblock %}
