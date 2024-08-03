@@ -1,46 +1,96 @@
 <!-- partials/posts.html -->
-{% load static %} {% for post in posts %}
-<style>
-  .post-footer {
-    display: flex;
-    align-items: center;
-    margin-block: 1.5rem 1rem;
-    font-weight: 600;
-    gap: 1rem;
-    width: 50%;
-    justify-content: space-between;
-  }
-  .post-footer-icons {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-</style>
-<div class="post">
-  <div class="profile">
-    <img src="{% static 'img/profile-img.png' %}" alt="profile" />
-    <a href="{% url 'profile' post.author.username %}" class="name">
-      <p class="display-name">{{post.author.display_name}}</p>
-      <p class="username">@{{post.author.username}}</p>
-    </a>
-  </div>
-  <div class="post-content">
-    <p><a href="{% url 'post' post.id %}"> {{ post.post }} </a></p>
-    <div class="post-footer">
-      <div class="post-footer-icons">
-        
-          <i class="fa-regular fa-calendar"></i>
-      </div>
-      <div class="post-footer-icons">
-        <p>
-
-          <i class="fa-regular fa-heart"></i>
+{% load static %} {% load date_filters %} {% for post in posts %}
+<div id="posts" class="post p-4 bg-white rounded-lg">
+  <div class="header flex justify-between items-center">
+    <a
+      href="{% url 'profile' post.author.username %}"
+      class="profile flex items-center gap-4 w-fit rounded-lg"
+    >
+      <img
+        src="{% static 'img/profile-img.png' %}"
+        alt="profile-img"
+        class="w-12 h-12 rounded-full"
+      />
+      <div class="div">
+        <p class="text-lg text-slate-800 font-bold">
+          {{post.author.display_name}}
         </p>
+        <p class="text-sm text-slate-500">@{{post.author}}</p>
       </div>
-      <div class="post-footer-icons">
-        <i class="fa-regular fa-comment"></i>
+      <p>{{ post.created_at|custom_date_display }}</p>
+    </a>
+    <div class="text-xl cursor-pointer flex gap-4 items-center">
+      
+      <i class="fa-solid fa-ellipsis text-slate-500"></i>
+    </div>
+  </div>
+  <div class="divide-y">
+    <div class="body py-2 mt-2 divide-y">
+      <a class="text-lg mb-4" href="{% url 'post' post.id %}">
+        <p>{{ post.post }}</p>
+      </a>
+      <div
+        class="flex gap-4 items-center my-2 pt-3 text-sm text-slate-500 divide-x-2 divide-slate-300"
+      >
+        <p id="likes-count-{{ post.id }}">{{post.total_likes}} Likes</p>
+        <p class="pl-4">54 Comments</p>
+      </div>
+    </div>
+    <div class="footer flex justify-between pt-3 text-xl">
+      <div class="flex gap-3 items-center">
+        <div
+          hx-post="{% url 'toggle_like' post.id %}"
+          hx-target="#likes-count-{{ post.id }}"
+          hx-swap="outerHTML"
+        >
+          {% if user in post.likes.all %}
+          <i class="fa-regular fa-heart text-slate-500 cursor-pointer"></i>
+          {% else %}
+          <i class="fa-solid fa-heart text-red-500 cursor-pointer"></i>
+          {% endif %}
+        </div>
+
+        <i
+          class="fa-regular fa-comment text-slate-500 cursor-pointer"
+          href="{% url 'post' post.id %}"
+        ></i>
+      </div>
+      <div class="div">
+        <i class="fa-solid fa-bookmark text-purple-800 cursor-pointer"></i>
+        <!-- <i class="fa-regular fa-bookmark text-slate-500 cursor-pointer"></i> -->
       </div>
     </div>
   </div>
 </div>
 {% endfor %}
+<!-- 
+<div class="post  bg-slate-200 rounded-xl mb-4 p-4">
+  <div class="profile flex gap-6 items-center mb-4">
+    <img src="{% static 'img/profile-img.png' %}" alt="profile" class="border-2 border-slate-500 w-20 h-20 rounded-[100%]" />
+    <a
+      href=''
+      class="name"
+    >
+      <p class="display-name text-xl font-bold">{{post.author.display_name}}</p>
+      <p class="username text-slate-500">@{{post.author.username}}</p>
+    </a>
+    <div>
+      
+    </div>
+  </div>
+  <div class="post-content ml-[5rem] px-4 pb-2">
+    <p class="mb-4 "><a > </a></p>
+    <div class="post-footer flex justify-between gap-4 w-[200px]">
+      <div class="post-footer-icons flex gap-2 items-center">
+        <p
+         
+          class=" text-slate-500"
+        >
+          
+        </p>
+        <p id="likes-count-{{ post.id }}" class="text-slate-500"></p>
+      </div>
+     
+    </div>
+  </div>
+</div> -->

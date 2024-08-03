@@ -1,5 +1,6 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %} {% load date_filters %} {% load static %}
 <!DOCTYPE html>
+{% block content %}
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,39 +9,128 @@
     <!-- <meta http-equiv="refresh" content="10"> -->
   </head>
   <body>
-    <div class="form-container">
-      {% if request.user.is_authenticated %}
-      <div class="profile">
-        <img src="{% static 'img/profile-img.png' %}" alt="profile" />
-        <a href="{% url 'profile' request.user %}" class="name">
-          <p class="display-name">{{request.user.display_name}}</p>
-          <p class="username">@{{request.user}}</p>
-        </a>
+    <div class="body md:flex h-screen p-4 gap-6">
+      <div class="main-content max-w-[1100px] w-full">
+        {% if request.user.is_authenticated %}
+        <form
+          id="post-form"
+          method="post"
+          hx-target="#posts"
+          hx-swap="outerHTML"
+          hx-post="{% url 'add_post' %}"
+          hx-on="htmx:afterRequest:clearForm"
+          class="post-form flex flex-col bg-white rounded-lg p-4 divide-y"
+        >
+          {% csrf_token %}
+          <div class="flex items-center gap-4">
+            <img
+              src="{% static 'img/profile-img.png' %}"
+              alt="profile-img"
+              class="w-12 h-12 rounded-full"
+            />
+            <textarea
+              class="w-full rounded-lg p-4 bg-gray-100 border-transparent border-2 focus:border-slate-200 focus:outline-none"
+              placeholder="Write something, post something"
+              style="resize: none"
+              name="post"
+              id="post-form"
+              rows="4"
+            ></textarea>
+          </div>
+          <div class="mt-4 flex justify-end pt-4">
+            <button
+              type="submit"
+              class="text-lg bg-purple-800 text-white min-w-28 px-6 py-2 rounded-lg hover:drop-shadow-lg"
+            >
+              Post
+            </button>
+          </div>
+        </form>
+        {% else %}
+        <div class="bg-white p-4 rounded-lg flex flex-col gap-4">
+          <h1 class="text-2xl font-bold">Get started</h1>
+          <p class="text-lg text-slate-700">
+            Login or Sign up today to make posts and comment on other users
+            posts
+          </p>
+          
+        </div>
+        {% endif %}
+
+        <div class="posts my-5 flex flex-col gap-4">
+          {% include "partials/posts.html" with posts=posts %}
+        </div>
       </div>
-      <form
-        id="post-form"
-        hx-post="{% url 'add_post' %}"
-        hx-target="#post-list"
-        hx-swap="outerHTML"
+{% if request.user.is_authenticated %}
+      <div
+        class="side-content flex flex-col gap-6 w-[calc((100vw-320px)-1100px)]"
       >
-        {% csrf_token %}
-        <div>{{ form.post}}</div>
-        <button type="submit">Add Post</button>
-      </form>
-      {% else %}
-      <div>
-        <h1 style="line-height: 1.5;">Get started</h1>
-        <p>
-          Login or Sign up today to make posts and comment on other users posts
-        </p>
+        <div class="followers bg-white min-h-28 rounded-lg p-4">
+          <h3 class="text-2xl font-bold">Followers</h3>
+          <ul class="my-2 py-2">
+            <li class="flex justify-between">
+              <a
+                href="#"
+                class="profile flex items-center gap-4 w-fit rounded-lg"
+              >
+                <img
+                  src="static/img/profile-img.png"
+                  alt="profile-img"
+                  class="w-12 h-12 rounded-full"
+                />
+                <div class="div">
+                  <p class="text-lg text-slate-800 font-bold">
+                    Chinyere Unamba
+                  </p>
+                  <p class="text-sm text-slate-500">@chinyereunamba</p>
+                </div>
+              </a>
+              <p class="text-slate-500 font-bold">Following</p>
+            </li>
+          </ul>
+        </div>
+        <div class="followers bg-white min-h-28 rounded-lg p-4">
+          <h3 class="text-2xl font-bold">Following</h3>
+          <ul class="my-2 py-2">
+            <li class="flex justify-between">
+              <a
+                href="#"
+                class="profile flex items-center gap-4 w-fit rounded-lg"
+              >
+                <img
+                  src="static/img/profile-img.png"
+                  alt="profile-img"
+                  class="w-12 h-12 rounded-full"
+                />
+                <div class="div">
+                  <p class="text-lg text-slate-800 font-bold">
+                    Chinyere Unamba
+                  </p>
+                  <p class="text-sm text-slate-500">@chinyereunamba</p>
+                </div>
+              </a>
+              <p class="text-slate-500 font-bold">Follows you</p>
+            </li>
+          </ul>
+        </div>
       </div>
       {% endif %}
     </div>
-
-    <div id="post-list">
-      {% include "partials/posts.html" with posts=posts %}
-    </div>
   </body>
 </html>
+
+<script>
+  document.body.addEventListener("htmx:afterRequest", function (event) {
+    if (event.detail.target.id === "posts") {
+      event.target.querySelector('textarea[name="post"]').value = "";
+    }
+  });
+  const login = () => {
+    window.location.href = "{% url 'login' %}";
+  };
+  const register = () => {
+    window.location.href = "{% url 'register' %}";
+  };
+</script>
 
 {% endblock %}

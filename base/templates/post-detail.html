@@ -1,25 +1,61 @@
 <!-- post_detail.html -->
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% load static %} {% load date_filters %}
+ {% block content %}
 <div>
-    <h1>Post</h1>
-  <p>{{ post.author }}</p>
-  <p>{{ post.post }}</p>
-  <p>{{ post.created_at }}</p>
+  <div class="post bg-slate-200 rounded-xl mb-4 p-4">
+    <div class="profile  flex gap-4 items-center mb-4 ">
+      <img src="{% static 'img/profile-img.png' %}" alt="profile" class="w-20 h-20 rounded-[100%]" />
+      <a href="{% url 'profile' post.author.username %}" class="name">
+        <p class="display-name  text-xl font-bold">{{post.author.display_name}}</p>
+        <p class="username text-slate-500">@{{post.author.username}}</p>
+      </a>
+      <p class="font-bold">{{ post.created_at|custom_date_display }}</p>
+    </div>
+    <div class="post-content">
+      <p>{{ post.post }}</p>
+      <div class="post-footer">
+        <div class="post-footer-icons">
+          <p
+            hx-post="{% url 'toggle_like' post.id %}"
+            hx-target="#likes-count-{{ post.id }}"
+            hx-swap="outerHTML"
+          >
+            {% if user in post.likes.all %}
+            <i class="fa-solid fa-heart"></i>
+            {% else %}
+            <i class="fa-regular fa-heart"></i>
+            {% endif %}
+          </p>
+          <p id="likes-count-{{ post.id }}">{{post.total_likes}}</p>
+        </div>
+        <a class="post-footer-icons" href="{% url 'post' post.id %}">
+          <i class="fa-regular fa-comment"></i>
+          <p>{{post.total_comments}}</p>
+        </a>
+        <a class="post-footer-icons" href="{% url 'post' post.id %}">
+          <i class="fa-solid fa-share-nodes"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+
+  <h3>Add a Comment</h3>
+  <div class="form-container">
+    <form
+      id="comment-form"
+      hx-post="{% url 'add_comment' post.id %}"
+      hx-target="#comments-section"
+      hx-swap="outerHTML"
+    >
+      {% csrf_token %} {{ form.as_p }}
+      <button class="py-4 px-8 border-2 border-blue-500 rounded-lg my-4" type="submit">Add Comment</button>
+    </form>
+  </div>
 
   <h2>Comments</h2>
   <div id="comments-section">
     {% include "partials/comments.html" with comments=post.comments.all %}
   </div>
-
-  <h3>Add a Comment</h3>
-  <form
-    id="comment-form"
-    hx-post="{% url 'add_comment' post.id %}"
-    hx-target="#comments-section"
-    hx-swap="outerHTML"
-  >
-    {% csrf_token %} {{ form.as_p }}
-    <button type="submit">Add Comment</button>
-  </form>
 </div>
 {% endblock %}

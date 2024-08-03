@@ -19,7 +19,12 @@
     </div>
     {% if request.user == profile_user %}
     <div>
-      <button><i class="fa fa-gear"></i>Edit profile</button>
+      <button
+        class="py-4 px-8 border-2 border-blue-500 rounded-lg my-4 flex items-center gap-4"
+        hx-get=""
+      >
+        <i class="fa fa-gear"></i>Edit profile
+      </button>
     </div>
     {% endif %}
   </div>
@@ -42,12 +47,14 @@
   </div>
 </div>
 <div class="post-container">
-  {% if not posts %}
+  {% if posts.count == 0 %}
   <div style="min-height: 400px; display: grid; place-items: center">
     <h1>No Posts found</h1>
   </div>
-  {% else %} {% for post in posts %}
-  <h1 style="margin-bottom: 1rem;">Posts</h1>
+  {% else %}
+  <!-- <h1 style="margin-bottom: 1rem;">Posts</h1> -->
+
+  {% for post in posts %}
   <div class="post">
     <div class="profile">
       <img src="{% static 'img/profile-img.png' %}" alt="profile" />

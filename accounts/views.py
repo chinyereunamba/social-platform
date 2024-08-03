@@ -8,42 +8,40 @@ from django.template.loader import render_to_string
 from .models import Follow, Account
 from base.models import Post
 
-from .forms import UserForm
+from .forms import UserForm, UpdateProfile
 
 # Create your views here.
 
 
 def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
 
         user = authenticate(request, email=email, password=password)
 
         if user is not None:
             login(request, user)
-            return redirect('/')
+            return redirect("/")
         else:
-            messages.error(request, 'User not found', fail_silently=False)
-            return redirect('/login')
+            messages.error(request, "User not found", fail_silently=False)
+            return redirect("/login")
 
-    return render(request, 'login.html')
+    return render(request, "login.html")
 
 
 def register(request):
     form = UserForm()
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserForm(request.POST)
 
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect("login")
 
-    context = {
-        'form': form
-    }
-    return render(request, 'register.html', context=context)
+    context = {"form": form}
+    return render(request, "register.html", context=context)
 
 
 def logout_view(request):
@@ -55,48 +53,82 @@ def logout_view(request):
 def follow_user(request, username):
     user_to_follow = get_object_or_404(Account, username=username)
     if request.user != user_to_follow:
-        Follow.objects.get_or_create(
-            follower=request.user, followed=user_to_follow)
+        Follow.objects.get_or_create(follower=request.user, followed=user_to_follow)
     if request.htmx:
         followers = Follow.objects.filter(followed=user_to_follow)
-        html = render_to_string('partials/follow_button.html', {
-            'profile_user': user_to_follow,
-            'is_following': True,
-            'followers_count': followers.count()
-        })
+        html = render_to_string(
+            "partials/follow_button.html",
+            {
+                "profile_user": user_to_follow,
+                "is_following": True,
+                "followers_count": followers.count(),
+            },
+        )
         return HttpResponse(html)
-    return redirect('profile', username=username)
+    return redirect("profile", username=username)
 
 
 @login_required
 def unfollow_user(request, username):
     user_to_unfollow = get_object_or_404(Account, username=username)
-    Follow.objects.filter(follower=request.user,
-                          followed=user_to_unfollow).delete()
+    Follow.objects.filter(follower=request.user, followed=user_to_unfollow).delete()
     if request.htmx:
         followers = Follow.objects.filter(followed=user_to_unfollow)
-        html = render_to_string('partials/follow_button.html', {
-            'profile_user': user_to_unfollow,
-            'is_following': False,
-            'followers_count': followers.count()
-        })
+        html = render_to_string(
+            "partials/follow_button.html",
+            {
+                "profile_user": user_to_unfollow,
+                "is_following": False,
+                "followers_count": followers.count(),
+            },
+        )
         return HttpResponse(html)
-    return redirect('profile', username=username)
+    return redirect("profile", username=username)
 
 
 @login_required
 def profile(request, username):
     user = get_object_or_404(Account, username=username)
-    posts = Post.objects.filter(author=request.user)
-    is_following = Follow.objects.filter(
-        follower=request.user, followed=user).exists()
+    posts = Post.objects.filter(author=request.user).order_by("-created_at")
+    is_following = Follow.objects.filter(follower=request.user, followed=user).exists()
     followers = Follow.objects.filter(followed=user)
     following = Follow.objects.filter(follower=user)
-    return render(request, 'profile.html', {
-        'profile_user': user,
-        'is_following': is_following,
-        'followers': followers,
-        'following': following,
-        'posts':posts
-    })
+    return render(
+        request,
+        "profile.html",
+        {
+            "profile_user": user,
+            "is_following": is_following,
+            "followers": followers,
+            "following": following,
+            "posts": posts,
+        },
+    )
 
+
+def edit_profile(request):
+    user = get_object_or_404(Account, user=request.user)
+    form = UpdateProfile(instance=user)
+    if request.method == "POST":
+        form = UpdateProfile(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            user = form.save()
+            if request.htmx:
+                
+                # html = render_to_string(
+                #     "partials/follow_button.html",
+                #     {
+                #         "profile_user": user_to_unfollow,
+                #         "is_following": False,
+                #         "followers_count": followers.count(),
+                #     },
+                # )
+            # return HttpResponse(html)
+                pass
+    return redirect('profile')
+
+
+def follow(request, username):
+    user = get_object_or_404(Account, username=username)
+    followers = Follow.objects.filter(followed=user)
+    following = Follow.objects.filter(follower=user)

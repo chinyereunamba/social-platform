@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .forms import PostForm, CommentForm
 
 # Create your views here.
@@ -16,21 +16,16 @@ def home(request):
 
 def add_post(request):
     if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.save()
-            form = PostForm()  # Reset the form after saving
-
+        content = request.POST.get("post")
+        user = request.user
+        if content:
+            post = Post.objects.create(post=content, author=user)
             if request.htmx:
                 posts = Post.objects.all()
                 html = render_to_string("partials/posts.html", {"posts": posts})
                 return HttpResponse(html)
-        else:
-            pass
-
-        redirect('home')
+            else:
+                return redirect("home")
 
 
 def post_detail(request, post_id):
@@ -49,14 +44,28 @@ def add_comment(request, post_id):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
-            comment.user = request.user
+            comment.author = request.user
             comment.save()
 
             if request.htmx:
-                comments = post.comments.all()
+                comments = Comment.objects.filter(post=post).order_by("-created_at")
                 html = render_to_string(
                     "partials/comments.html", {"comments": comments}
                 )
                 return HttpResponse(html)
     return redirect("post_detail", post_id=post_id)
 
+
+@login_required
+def toggle_like(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    like, created = Like.objects.get_or_create(user=request.user, post=post)
+
+    if not created:
+        like.delete()
+
+    if request.htmx:
+        likes_count = post.total_likes
+        return HttpResponse(likes_count)
+
+    return redirect("post_detail", post_id=post_id)

@@ -43,6 +43,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     display_name = models.CharField(
         _("Display Name"), max_length=80, blank=True)
+    bio = models.TextField(blank=True, null=True)
+    profile_pic = models.ImageField(upload_to='img/', blank=True)
 
     date_joined = models.DateField(auto_now_add=True, blank=True)
     last_login = models.DateTimeField(auto_now=True, blank=True)
@@ -65,14 +67,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label: str) -> bool:
         return True
 
-
-class Profile(models.Model):
-    user = models.OneToOneField(Account, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, null=True)
-    profile_pic = models.ImageField(upload_to='img/', blank=True)
-
-    def __str__(self):
-        return self.user.username
 
 
 class Follow(models.Model):
